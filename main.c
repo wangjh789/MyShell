@@ -95,9 +95,22 @@ void mygrep(char *word, char output[])
         ptr = strtok(NULL, "\n");
     }
 }
-void execCMD(char* cmd){ 
-    printf("%s : %d\n",cmd,seperate(cmd));
-    
+void execCMD(char* cmd){ // ; 포함된거는 처리 안됨
+    char temp[20];
+    strcpy(temp,cmd);
+    char* cmdArr[10];
+    char *ptr = strtok(temp," "); // cmd = cmdArr[0] 
+    int i =0;
+    while (ptr != NULL)
+    {
+        cmdArr[i] = ptr;
+        i++;
+        ptr = strtok(NULL," ");
+    }
+    for(int j=0;j<i;j++){
+        printf("%s\n", cmdArr[j]);
+    }
+
 }
 
 int seperate(char* first){ // ls, cd, pwd, ... ex> ls -al 중에 ls만 넘어옴
@@ -109,6 +122,8 @@ int seperate(char* first){ // ls, cd, pwd, ... ex> ls -al 중에 ls만 넘어옴
     }
     if(strstr(first,"pwd") != NULL){
         return 3;
+    }else{
+        return -1;
     }
 }
 
@@ -117,13 +132,14 @@ int main()
     char output[OUTSIZE];
     char input[INSIZE];
     char c;
-    int i = 0;
+    int cI = 0;
+    
 
     while ((c = getchar()) != EOF)
     {
         if (c != 10)
         { //10 : '\n'
-            input[i++] = c;
+            input[cI++] = c;
         }
         if (c == 10)
         {
@@ -132,17 +148,20 @@ int main()
                 char *ptr = strtok(input, ";"); // ; 자르기
                 while (ptr != NULL)  //ptr : 하나의 cmd
                 {
-                    execCMD(trimwhitespace(ptr));     
+                    
+                    execCMD(trimwhitespace(ptr));
+                    printf("%s\n",ptr);
                     ptr = strtok(NULL, ";"); 
                 }
             }else{   // ; 가 없을때
                 execCMD(trimwhitespace(input));
                 
             }
-            for(int j=0;j<i;j++){  //input 초기화
+            for(int j=0;j<cI;j++){  //input 초기화
                 input[j] = '\0';
             }
-            i=0;      
+            cI=0;
+              
         }
     }
 }
